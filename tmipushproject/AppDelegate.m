@@ -25,8 +25,8 @@
         }
     }
 
-
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+    //啟動推播服務
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     
     return YES;
 }
@@ -68,14 +68,13 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
                              stringByReplacingOccurrencesOfString:@"" withString:@""]
                            stringByReplacingOccurrencesOfString:@" " withString:@""];
     
+    // 將所收到的 device token 資料傳到 APN Server
     NSLog(@"%@",pushToken);
     
-    // 將所收到的 device token 資料傳到 APN Server
+
 }
 
 
-
-// This function called when receive notification and app is in the foreground.
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
     /* 把收到的推播列舉出來 */
@@ -85,7 +84,6 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
     
     /* 印出 Badge number */
     NSLog(@"Badge: %@", [[userInfo objectForKey:@"aps"] objectForKey:@"badge"]);
-    
     NSLog(@"Receive remote notification : %@",userInfo);
 }
 
