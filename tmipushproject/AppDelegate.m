@@ -10,12 +10,27 @@
 
 @implementation AppDelegate
 
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    //判斷是否由遠程消息通知觸發應用程序启動
+    if ([launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey]!=nil) {
+        //獲取應用程序消息通知標記數（即小紅圈中的數字）
+        int badge = [UIApplication sharedApplication].applicationIconBadgeNumber;
+        if (badge>0) {
+            //如果應用程序消息通知標記數（即小紅圈中的數字）大於0，清除標記。
+            badge--;
+            //清除標記。清除小紅圈中數字，小紅圈中數字为0，小紅圈才會消除。
+            [UIApplication sharedApplication].applicationIconBadgeNumber = badge;
+        }
+    }
+
+
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+    
     return YES;
 }
-							
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -42,5 +57,37 @@
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+
+
+- (void)application:(UIApplication*)application
+didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
+    
+    NSString *tokenStr = [deviceToken description];
+    NSString *pushToken = [[tokenStr
+                             stringByReplacingOccurrencesOfString:@"" withString:@""]
+                           stringByReplacingOccurrencesOfString:@" " withString:@""];
+    
+    NSLog(@"%@",pushToken);
+    
+    // 將所收到的 device token 資料傳到 APN Server
+}
+
+
+
+// This function called when receive notification and app is in the foreground.
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    /* 把收到的推播列舉出來 */
+    for (id key in userInfo) {
+        NSLog(@"Key=[%@], Value=[%@]", key, [userInfo objectForKey:key]);
+    }
+    
+    /* 印出 Badge number */
+    NSLog(@"Badge: %@", [[userInfo objectForKey:@"aps"] objectForKey:@"badge"]);
+    
+    NSLog(@"Receive remote notification : %@",userInfo);
+}
+
 
 @end
